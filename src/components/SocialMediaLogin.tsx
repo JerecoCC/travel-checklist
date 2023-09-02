@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faFacebook } from "@fortawesome/free-brands-svg-icons";
 import { supabase } from '../lib/helper/supabaseClient';
 import { Provider } from '@supabase/gotrue-js';
+import { ROUTES } from '../constants';
 
 export const SocialMediaLogin: FC = () => {
   const login = async (provider: Provider) => {
@@ -16,6 +17,7 @@ export const SocialMediaLogin: FC = () => {
             access_type: "offline",
             prompt: "consent",
           },
+          redirectTo: ROUTES.CHECKLIST
         },
       });
       if (error) throw error;

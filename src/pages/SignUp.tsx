@@ -17,6 +17,20 @@ interface FormErrors {
 export const SignUp: FC = () => {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.access_token) {
+        navigate(ROUTES.CHECKLIST);
+      } else {
+        navigate(ROUTES.LOGIN);
+      }
+    }
+
+    checkSession();
+    // eslint-disable-next-line
+  }, []);
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -117,7 +131,7 @@ export const SignUp: FC = () => {
           />
           <FormInput
             placeholder="Confirm Password"
-            onChange={(value: string) => {setConfirmPassword(value)}}
+            onChange={(value: string) => { setConfirmPassword(value) }}
             autoComplete="current-password"
             type="password"
             hasError={!!formErrors.confirmPassword}

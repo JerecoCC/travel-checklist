@@ -1,12 +1,25 @@
-import React, { FC, useState } from "react";
-import { Button, Divider, Input, Text } from "@chakra-ui/react"
+import React, { FC, useEffect, useState } from "react";
+import { Button, Divider, Text } from "@chakra-ui/react"
 import { supabase } from "../lib/helper/supabaseClient";
 import { useNavigate } from "react-router-dom";
-import { InputPassword, SocialMediaLogin } from "../components";
+import { FormInput, SocialMediaLogin } from "../components";
 import { ROUTES } from "../constants";
 
 export const Login: FC = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.access_token) {
+        navigate(ROUTES.CHECKLIST)
+      }
+    }
+
+    checkSession();
+    // eslint-disable-next-line
+  }, []);
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -27,15 +40,18 @@ export const Login: FC = () => {
       <section className="w-2/3 flex flex-col justify-center items-center gap-4 px-20 text-center">
         <Text fontSize="5xl" as="b" color="teal.400">Login To Travel Checklist</Text>
         <form className="flex flex-col gap-4 items-center w-4/6 max-w-md" onSubmit={login}>
-          <Input
-            focusBorderColor="teal.400"
+          <FormInput
             placeholder="Email"
-            width="full"
-            autoComplete="email"
             type="email"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+            autoComplete="email"
+            onChange={(value: string) => setEmail(value)}
           />
-          <InputPassword onChange={(value: string) => setPassword(value)} placeholder="Password"/>
+          <FormInput
+            placeholder="Password"
+            onChange={(value: string) => setPassword(value)}
+            autoComplete="current-password"
+            type="password"
+          />
           <Button
             colorScheme="teal"
             className="w-3/6 max-w-sm"
