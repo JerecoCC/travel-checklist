@@ -10,8 +10,7 @@ export const Login: FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const login = async (e: any) => {
-    e.preventDefault();
+  const login = async () => {
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email: email,
@@ -40,7 +39,7 @@ export const Login: FC = () => {
           <Button
             colorScheme="teal"
             className="w-3/6 max-w-sm"
-            type="submit"
+            onClick={login}
           >
             Sign In
           </Button>

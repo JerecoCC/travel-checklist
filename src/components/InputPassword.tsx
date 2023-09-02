@@ -5,9 +5,10 @@ import React, { FC, useState } from 'react';
 interface InputPasswordProps {
   onChange: (value: string) => void;
   placeholder: string;
+  [x: string | number | symbol]: unknown;
 }
 
-export const InputPassword: FC<InputPasswordProps> = ({ onChange, placeholder }) => {
+export const InputPassword: FC<InputPasswordProps> = ({ onChange, placeholder, ...others }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   return (
@@ -18,6 +19,7 @@ export const InputPassword: FC<InputPasswordProps> = ({ onChange, placeholder })
         type={showPassword ? "text" : "password"}
         autoComplete="current-password"
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+        {...others}
       />
       <InputRightElement width='4.5rem'>
         <Button
