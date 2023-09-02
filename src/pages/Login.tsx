@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { Button, Divider, IconButton, Input, Text } from "@chakra-ui/react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faFacebook } from "@fortawesome/free-brands-svg-icons";
@@ -6,9 +6,24 @@ import { supabase } from "../lib/helper/supabaseClient";
 import { Provider } from "@supabase/supabase-js";
 
 export const Login: FC = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
+  const login = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const loginWithSocMed = async (provider: Provider) => {
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: provider,
         options: {
           queryParams: {
@@ -18,7 +33,6 @@ export const Login: FC = () => {
         },
       });
       if (error) throw error;
-      console.log(data);
     } catch (error) {
       console.error(error);
     }
@@ -33,16 +47,19 @@ export const Login: FC = () => {
             placeholder="Email"
             width="full"
             autoComplete="email"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
           />
           <Input
             focusBorderColor="teal.400"
             placeholder="Password"
             type="password"
             autoComplete="current-password"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
           />
           <Button
             colorScheme="teal"
             className="w-3/6 max-w-sm"
+            onClick={login}
           >
             Sign In
           </Button>
