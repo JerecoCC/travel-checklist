@@ -1,16 +1,19 @@
 import { Button } from '@chakra-ui/button';
-import React, { FC, useContext, useEffect } from 'react';
-import { ROUTES, TODOS_ALL_QUERY } from '../lib/constants';
+import React, { FC, useContext, useEffect, useState } from 'react';
+import { ROUTES, TODOS_QUERY } from '../lib/constants';
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate } from "react-router-dom";
 import { Text } from '@chakra-ui/layout';
 import { Progress } from '@chakra-ui/progress';
 import { Checklist } from '../components';
 import { ChecklistContext } from '../lib/context';
+import Todo from '../lib/types/Todo';
 
 export const Home: FC = () => {
   const navigate = useNavigate();
   const context = useContext(ChecklistContext);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [completePercent, setCompletePercent] = useState<number>(0);
 
   supabase
     .channel('schema-db-changes')
@@ -21,7 +24,7 @@ export const Home: FC = () => {
         schema: 'public',
         table: 'todos'
       },
-      () => getAll()
+      () => getItems()
     )
     .subscribe();
 
@@ -46,22 +49,33 @@ export const Home: FC = () => {
     // eslint-disable-next-line
   }, []);
 
-  const getAll = async () => {
-    console.log("context.user",context.user)
-    if (context.user) {
+  useEffect(() => {
+    getItems();
+    // eslint-disable-next-line
+  }, [context.user]);
+
+  const getItems = async () => {
+    if (context.user.id) {
       try {
         let { data, error } = await supabase
           .from('todos')
-          .select(TODOS_ALL_QUERY)
-          .eq('user_id', context.user.id || "0");
-
-        console.log(data);
+          .select(TODOS_QUERY)
+          .is('parent_id', null)
+          .eq('user_id', context.user.id);
         if (error) throw error;
-        // if (data) setTodos(data);
+        if (data) {
+          setTodos(data);
+          calculateCompleted(data);
+        }
       } catch (error) {
         console.error(error);
       }
     }
+  }
+
+  const calculateCompleted = async (data: Todo[]) => {
+    const completed = data.reduce((total, item) => total + (item.isComplete ? 1 : 0), 0);
+    setCompletePercent(Math.round((completed / data.length) * 100));
   }
 
   const signOut = async () => {
@@ -89,10 +103,10 @@ export const Home: FC = () => {
       <div className="py-16 flex items-center flex-col gap-12">
         <section className="w-2/4 px-16 py-8 bg-white rounded-xl">
           <Text fontSize="3xl" fontWeight="medium" className="mb-4">My Travel Checklist</Text>
-          <Text fontSize="xl" fontWeight="medium">30%</Text>
-          <Progress value={30} />
+          <Text fontSize="xl" fontWeight="medium">{completePercent}%</Text>
+          <Progress value={completePercent} />
         </section>
-        <Checklist />
+        <Checklist data={todos} />
       </div>
     </div>
   )

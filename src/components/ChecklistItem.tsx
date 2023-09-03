@@ -18,7 +18,7 @@ export const ChecklistItem: FC<ChecklistItemProps> = ({ data }) => {
     <div>
       <div className="px-8 border-b flex justify-between py-2">
         <div className="group/item flex items-center gap-4 w-full">
-          <Checkbox size="lg" colorScheme='teal' />
+          <Checkbox size="lg" colorScheme='teal' isChecked={data.isComplete} />
           <div className="flex gap-2">
             <Text
               fontSize="lg"
@@ -34,11 +34,7 @@ export const ChecklistItem: FC<ChecklistItemProps> = ({ data }) => {
                 className="m-0"
                 color="gray.500"
               >
-                ({data.todos.reduce((total, item) => {
-
-                  return total + (item.isComplete ? 1 : 0)
-
-                }, 0)}/{data.todos.length})
+                ({data.todos.reduce((total, item) => total + (item.isComplete ? 1 : 0), 0)}/{data.todos.length})
               </Text>
             )}
             <div className="invisible group-hover/item:visible">

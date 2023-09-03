@@ -1,53 +1,17 @@
 import { Text } from '@chakra-ui/layout';
-import React, { FC, useContext, useEffect, useState } from 'react';
+import React, { FC, useContext, useState } from 'react';
 import { ChecklistItem } from './ChecklistItem';
 import { AddItem } from './AddItem';
 import { Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea } from '@chakra-ui/react';
 import { ChecklistContext } from '../lib/context';
 import { FormInput } from './FormInput';
 import { supabase } from '../lib/supabaseClient';
-import { TODOS_QUERY } from '../lib/constants';
 import Todo from '../lib/types/Todo';
 
-export const Checklist: FC = () => {
+export const Checklist: FC<{ data: Todo[] }> = ({ data }) => {
   const context = useContext(ChecklistContext);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [todos, setTodos] = useState<Todo[]>([]);
-  
-  supabase
-    .channel('schema-db-changes')
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'todos'
-      },
-      () => getItems()
-    )
-    .subscribe();
-
-  useEffect(() => {
-    getItems();
-    // eslint-disable-next-line
-  }, [context.user]);
-
-  const getItems = async () => {
-    if (context.user.id) {
-      try {
-        let { data, error } = await supabase
-          .from('todos')
-          .select(TODOS_QUERY)
-          .is('parent_id', null)
-          .eq('user_id', context.user.id);
-        if (error) throw error;
-        if (data) setTodos(data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }
 
   const addItem = async () => {
     try {
@@ -61,8 +25,6 @@ export const Checklist: FC = () => {
       if (error) throw error;
     } catch (error) {
       console.error(error);
-    } finally {
-      getItems();
     }
     context.setIsModalOpen(false);
   }
@@ -77,7 +39,7 @@ export const Checklist: FC = () => {
         >
           Checklist
         </Text>
-        {todos.map((item) => (
+        {data.map((item) => (
           <ChecklistItem key={item.id} data={item} />
         ))}
         <AddItem />
