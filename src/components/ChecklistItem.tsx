@@ -5,8 +5,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
 import { Text } from '@chakra-ui/layout';
 import { Checkbox } from '@chakra-ui/checkbox';
+import { AddItem } from './AddItem';
 
-export const ChecklistItem: FC = () => {
+interface ChecklistItemProps {
+  title?: string;
+  description?: string;
+}
+
+export const ChecklistItem: FC<ChecklistItemProps> = ({title, description}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <div>
@@ -14,11 +20,11 @@ export const ChecklistItem: FC = () => {
         <div className="flex items-center gap-4">
           <Checkbox size="lg" colorScheme='teal' />
           <Text
-            fontSize="xl"
+            fontSize="lg"
             fontWeight="medium"
             className="m-0"
           >
-            Item 1
+            {title}
           </Text>
         </div>
         <IconButton
@@ -32,7 +38,8 @@ export const ChecklistItem: FC = () => {
         />
       </div>
       <Collapse in={isOpen} className="pl-20 -ml-3 py-2 border-b" animateOpacity>
-        Content
+        {description}
+        <AddItem />
       </Collapse> 
     </div>
   );

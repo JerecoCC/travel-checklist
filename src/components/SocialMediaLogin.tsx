@@ -3,9 +3,9 @@ import { IconButton } from '@chakra-ui/button';
 import { Text } from '@chakra-ui/layout';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faFacebook } from "@fortawesome/free-brands-svg-icons";
-import { supabase } from '../lib/helper/supabaseClient';
+import { supabase } from '../lib/supabaseClient';
 import { Provider } from '@supabase/gotrue-js';
-import { ROUTES } from '../constants';
+import { ROUTES } from '../lib/constants';
 
 export const SocialMediaLogin: FC = () => {
   const login = async (provider: Provider) => {

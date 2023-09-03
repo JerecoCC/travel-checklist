@@ -1,9 +1,9 @@
 import React, { FC, useEffect, useState } from "react";
 import { Button, Divider, Text } from "@chakra-ui/react"
-import { supabase } from "../lib/helper/supabaseClient";
+import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { FormInput, SocialMediaLogin } from "../components";
-import { ROUTES } from "../constants";
+import { ROUTES } from "../lib/constants";
 
 export const Login: FC = () => {
   const navigate = useNavigate();

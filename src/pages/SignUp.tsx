@@ -3,9 +3,9 @@ import { FormInput, SocialMediaLogin } from '../components';
 import { Divider, Text } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/button';
 import { useNavigate } from "react-router-dom";
-import { ROUTES } from '../constants';
+import { ROUTES } from '../lib/constants';
 import { useDebounce } from '../hooks/useDebounce';
-import { supabase } from '../lib/helper/supabaseClient';
+import { supabase } from '../lib/supabaseClient';
 
 interface FormErrors {
   name?: string;

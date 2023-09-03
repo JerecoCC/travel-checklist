@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import { supabase } from '../lib/helper/supabaseClient';
-import { ROUTES } from '../constants';
+import { supabase } from '../lib/supabaseClient';
+import { ROUTES } from '../lib/constants';
 
 export const Default: FC = () => {
   const navigate = useNavigate();
