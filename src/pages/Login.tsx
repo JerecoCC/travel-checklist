@@ -30,6 +30,7 @@ export const Login: FC = () => {
         password: password
       });
       if (error) throw error;
+      navigate(ROUTES.CHECKLIST);
     } catch (error) {
       console.error(error);
     }
