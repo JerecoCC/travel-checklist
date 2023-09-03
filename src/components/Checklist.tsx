@@ -7,14 +7,7 @@ import { ChecklistContext } from '../lib/context';
 import { FormInput } from './FormInput';
 import { supabase } from '../lib/supabaseClient';
 import { TODOS_QUERY } from '../lib/constants';
-
-interface Todo {
-  id: string;
-  title?: string;
-  description?: string;
-  isComplete?: boolean;
-  todos?: Todo[];
-}
+import Todo from '../lib/types/Todo';
 
 export const Checklist: FC = () => {
   const context = useContext(ChecklistContext);
@@ -22,39 +15,54 @@ export const Checklist: FC = () => {
   const [description, setDescription] = useState<string>("");
   const [todos, setTodos] = useState<Todo[]>([]);
   
+  supabase
+    .channel('schema-db-changes')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'todos'
+      },
+      () => getItems()
+    )
+    .subscribe();
 
   useEffect(() => {
     getItems();
     // eslint-disable-next-line
-  }, [])
+  }, [context.user]);
 
   const getItems = async () => {
-    try {
-      let { data, error } = await supabase
-        .from('todos')
-        .select(TODOS_QUERY)
-        .is('parent_id', null);
-      if (error) throw error;
-      if (data) setTodos(data);
-    } catch (error) {
-      console.error(error);
+    if (context.user.id) {
+      try {
+        let { data, error } = await supabase
+          .from('todos')
+          .select(TODOS_QUERY)
+          .is('parent_id', null)
+          .eq('user_id', context.user.id);
+        if (error) throw error;
+        if (data) setTodos(data);
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 
   const addItem = async () => {
-    const session = await supabase.auth.getSession();
     try {
       const { error } = await supabase
         .from('todos')
         .insert([{
           title: title,
           description: description,
-          user_id: session.data.session?.user.id
+          user_id: context.user.id
         }]);
       if (error) throw error;
-      getItems();
     } catch (error) {
       console.error(error);
+    } finally {
+      getItems();
     }
     context.setIsModalOpen(false);
   }
@@ -70,7 +78,7 @@ export const Checklist: FC = () => {
           Checklist
         </Text>
         {todos.map((item) => (
-          <ChecklistItem key={item.id} title={item.title} description={item.description} />
+          <ChecklistItem key={item.id} data={item} />
         ))}
         <AddItem />
       </section>

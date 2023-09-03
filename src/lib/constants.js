@@ -22,3 +22,8 @@ todos (
   isComplete
 )
 `;
+
+export const TODOS_ALL_QUERY = `
+id,
+isComplete
+`;
