@@ -5,10 +5,15 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { ChecklistContext } from '../lib/context';
 import { MODAL_TITLES } from '../lib/constants';
 
-export const AddItem: FC = () => {
+interface AddItemProps {
+  id?: string
+}
+
+export const AddItem: FC<AddItemProps> = ({ id = "" }) => {
   const context = useContext(ChecklistContext);
 
   const showAddModal = () => {
+    context.setParentId(id);
     context.setModalTitle(MODAL_TITLES.ADD);
     context.setModalOpen(true);
   }

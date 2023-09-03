@@ -22,3 +22,8 @@ todos (
   is_completed
 )
 `;
+
+export const TODOS_COUNT_QUERY = `
+id,
+is_completed
+`;

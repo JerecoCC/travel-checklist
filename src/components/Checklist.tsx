@@ -4,15 +4,10 @@ import { ChecklistItem } from './ChecklistItem';
 import { AddItem } from './AddItem';
 import { ChecklistContext } from '../lib/context';
 import { supabase } from '../lib/supabaseClient';
-import Todo from '../lib/types/Todo';
 import { DeleteAlert } from './DeleteAlert';
 import { AddEditModal } from './AddEditModal';
 
-interface ChecklistProps {
-  data: Todo[]
-}
-
-export const Checklist: FC<ChecklistProps> = ({ data }) => {
+export const Checklist: FC = () => {
   const context = useContext(ChecklistContext);
 
   const deleteItem = async () => {
@@ -23,6 +18,8 @@ export const Checklist: FC<ChecklistProps> = ({ data }) => {
           .delete()
           .match({ id: context.itemId });
         if (error) throw error;
+
+        context.refreshList();
         context.setAlertOpen(false);
         context.setItemId("");
       } catch (error) {
@@ -41,8 +38,8 @@ export const Checklist: FC<ChecklistProps> = ({ data }) => {
         >
           Checklist
         </Text>
-        {data.length > 0 ? data.map((item) => (
-          <ChecklistItem key={item.id} data={item} />
+        {context.todos.length > 0 ? context.todos.map((item) => (
+          <ChecklistItem key={item.id} data={item} isParent/>
         )) : (
           <Text
             className="px-8 py-4 border-b m-0"

@@ -31,6 +31,9 @@ export const AddEditModal: FC = () => {
       if (context.itemId !== "") {
         getItem(context.itemId);
       }
+    } else {
+      setTitle("");
+      setDescription("");
     }
     // eslint-disable-next-line
   }, [context.isModalOpen]);
@@ -42,9 +45,12 @@ export const AddEditModal: FC = () => {
         .insert([{
           title: title,
           description: description,
-          user_id: context.user.id
+          user_id: context.user.id,
+          parent_id: context.parentId === "" ? null : context.parentId
         }]);
       if (error) throw error;
+
+      context.refreshList();
     } catch (error) {
       console.error(error);
     }
@@ -62,6 +68,7 @@ export const AddEditModal: FC = () => {
         .eq('id', id);
       if (error) throw error;
 
+      context.refreshList();
       context.setModalOpen(false);
       context.setItemId("");
     } catch (error) {
@@ -99,8 +106,6 @@ export const AddEditModal: FC = () => {
             onClick={() => {
               context.setItemId("");
               context.setModalOpen(false);
-              setTitle("");
-              setDescription("");
             }}
           >
             Close

@@ -14,9 +14,10 @@ import { MODAL_TITLES } from '../lib/constants';
 
 interface ChecklistItemProps {
   data: Todo;
+  isParent?: boolean;
 }
 
-export const ChecklistItem: FC<ChecklistItemProps> = ({ data }) => {
+export const ChecklistItem: FC<ChecklistItemProps> = ({ data, isParent = false }) => {
   const context = useContext(ChecklistContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -27,6 +28,8 @@ export const ChecklistItem: FC<ChecklistItemProps> = ({ data }) => {
         .update({ is_completed: isCompleted })
         .eq('id', id);
       if (error) throw error;
+
+      context.refreshList();
     } catch (error) {
       console.error(error);
     }
@@ -34,7 +37,7 @@ export const ChecklistItem: FC<ChecklistItemProps> = ({ data }) => {
 
   return (
     <div>
-      <div className="px-8 border-b flex justify-between py-2">
+      <div className={`px-8 border-b flex justify-between py-2 min-h-[57px] ${isParent ? "" : "pl-20 -ml-3"}`}>
         <div className="group/item flex items-center gap-4 w-full">
           <Checkbox
             size="lg"
@@ -94,23 +97,36 @@ export const ChecklistItem: FC<ChecklistItemProps> = ({ data }) => {
             </div>
           </div>
         </div>
-        <IconButton
-          onClick={() => setIsOpen((prev) => !prev)}
-          variant='ghost'
-          colorScheme='teal'
-          aria-label="Toggle child items"
-          fontSize='20px'
-          icon={<FontAwesomeIcon icon={isOpen ? faAngleUp : faAngleDown} />}
-          isRound
-        />
+        {(isParent || data.description !== "") && (
+          <IconButton
+            onClick={() => setIsOpen((prev) => !prev)}
+            variant='ghost'
+            colorScheme='teal'
+            aria-label="Toggle child items"
+            fontSize='20px'
+            icon={<FontAwesomeIcon icon={isOpen ? faAngleUp : faAngleDown} />}
+            isRound
+          />
+        )}
       </div>
-      <Collapse in={isOpen} className=" border-b" animateOpacity>
-        <div className="border-b pl-20 -ml-3 py-2">
-          <Text className="m-0">{data.description}</Text>
-        </div>
-        <div className="pl-20 -ml-3">
-          <AddItem />
-        </div>
+      <Collapse in={isOpen} className="border-b" animateOpacity>
+        {data.description && (
+          <div className={`pl-20 -ml-3 py-2 ${isParent ? "border-b" : ""}`}>
+            <Text className="m-0">{data.description}</Text>
+          </div>
+        )}
+        {isParent && (
+          <>
+            <div className="">
+              {data.todos?.map((item) => (
+                <ChecklistItem key={item.id} data={item} />
+              ))}
+            </div>
+            <div className="pl-20 -ml-6">
+              <AddItem id={data.id} />
+            </div>
+          </>
+        )}
       </Collapse>
     </div>
   );
