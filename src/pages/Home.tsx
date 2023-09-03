@@ -50,11 +50,14 @@ export const Home: FC = () => {
   }, []);
 
   useEffect(() => {
-    getItems();
+    if (context.user) {
+      getItems();
+    }
     // eslint-disable-next-line
   }, [context.user]);
 
   const getItems = async () => {
+    console.log("Get Items")
     if (context.user.id) {
       try {
         let { data, error } = await supabase

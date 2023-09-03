@@ -1,6 +1,6 @@
 import { IconButton } from '@chakra-ui/button';
 import { Collapse } from '@chakra-ui/transition';
-import React, { FC, useState } from 'react';
+import React, { FC, useContext, useState } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown, faAngleUp, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Text } from '@chakra-ui/layout';
@@ -8,12 +8,15 @@ import { Checkbox } from '@chakra-ui/checkbox';
 import { AddItem } from './AddItem';
 import Todo from '../lib/types/Todo';
 import { supabase } from '../lib/supabaseClient';
+import { Tooltip } from '@chakra-ui/react';
+import { ChecklistContext } from '../lib/context';
 
 interface ChecklistItemProps {
   data: Todo;
 }
 
 export const ChecklistItem: FC<ChecklistItemProps> = ({ data }) => {
+  const context = useContext(ChecklistContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const toggleItem = async (id: string, isCompleted: boolean) => {
@@ -60,22 +63,29 @@ export const ChecklistItem: FC<ChecklistItemProps> = ({ data }) => {
               </Text>
             )}
             <div className="invisible group-hover/item:visible">
-              <IconButton
-                onClick={() => setIsOpen((prev) => !prev)}
-                variant='ghost'
-                colorScheme='teal'
-                aria-label="Toggle child items"
-                size="xs"
-                icon={<FontAwesomeIcon icon={faPencil} />}
-              />
-              <IconButton
-                onClick={() => setIsOpen((prev) => !prev)}
-                variant='ghost'
-                colorScheme='teal'
-                aria-label="Toggle child items"
-                size="xs"
-                icon={<FontAwesomeIcon icon={faTrash} />}
-              />
+              <Tooltip label="Edit Item" aria-label="Edit item tooltip">
+                <IconButton
+                  onClick={() => console.log("Edit Item")}
+                  variant='ghost'
+                  colorScheme='teal'
+                  aria-label="Edit item"
+                  size="xs"
+                  icon={<FontAwesomeIcon icon={faPencil} />}
+                />
+              </Tooltip>
+              <Tooltip label="Delete Item" aria-label="Delete item tooltip">
+                <IconButton
+                  onClick={() => {
+                    context.setAlertOpen(true);
+                    context.setItemId(data.id);
+                  }}
+                  variant='ghost'
+                  colorScheme='teal'
+                  aria-label="Delete item"
+                  size="xs"
+                  icon={<FontAwesomeIcon icon={faTrash} />}
+                />
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -89,9 +99,13 @@ export const ChecklistItem: FC<ChecklistItemProps> = ({ data }) => {
           isRound
         />
       </div>
-      <Collapse in={isOpen} className="pl-20 -ml-3 py-2 border-b" animateOpacity>
-        {data.description}
-        <AddItem />
+      <Collapse in={isOpen} className=" border-b" animateOpacity>
+        <div className="border-b pl-20 -ml-3 py-2">
+          <Text className="m-0">{data.description}</Text>
+        </div>
+        <div className="pl-20 -ml-3">
+          <AddItem />
+        </div>
       </Collapse>
     </div>
   );

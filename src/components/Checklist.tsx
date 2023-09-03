@@ -7,8 +7,13 @@ import { ChecklistContext } from '../lib/context';
 import { FormInput } from './FormInput';
 import { supabase } from '../lib/supabaseClient';
 import Todo from '../lib/types/Todo';
+import { DeleteAlert } from './DeleteAlert';
 
-export const Checklist: FC<{ data: Todo[] }> = ({ data }) => {
+interface ChecklistProps {
+  data: Todo[]
+}
+
+export const Checklist: FC<ChecklistProps> = ({ data }) => {
   const context = useContext(ChecklistContext);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -26,7 +31,23 @@ export const Checklist: FC<{ data: Todo[] }> = ({ data }) => {
     } catch (error) {
       console.error(error);
     }
-    context.setIsModalOpen(false);
+    context.setModalOpen(false);
+  }
+
+  const deleteItem = async () => {
+    if (context.itemId) {
+      try {
+        const { error } = await supabase
+          .from('todos')
+          .delete()
+          .match({ id: context.itemId });
+        if (error) throw error;
+        context.setAlertOpen(false);
+        context.setItemId("");
+      } catch (error) {
+        console.error(error);
+      }
+    }
   }
 
   return (
@@ -49,10 +70,12 @@ export const Checklist: FC<{ data: Todo[] }> = ({ data }) => {
             No items added.
           </Text>
         )}
-        <AddItem />
+        <div className="pl-5">
+          <AddItem />
+        </div>
       </section>
-
-      <Modal isOpen={context.isModalOpen} onClose={() => context.setIsModalOpen(false)}>
+      <DeleteAlert onConfirm={deleteItem} />
+      <Modal isOpen={context.isModalOpen} onClose={() => context.setModalOpen(false)}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{context.modalTitle}</ModalHeader>
@@ -78,7 +101,7 @@ export const Checklist: FC<{ data: Todo[] }> = ({ data }) => {
               colorScheme='teal'
               variant='ghost'
               mr={3}
-              onClick={() => context.setIsModalOpen(false)}
+              onClick={() => context.setModalOpen(false)}
             >
               Close
             </Button>

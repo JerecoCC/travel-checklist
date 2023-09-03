@@ -10,9 +10,17 @@ export const ChecklistContext = createContext({
   setUser: (user: User): void => {
     throw new Error('setUser() not implemented');
   },
+  itemId: "",
+  setItemId: (id: string): void => {
+    throw new Error('setItemId() not implemented');
+  },
+  isAlertOpen: false,
+  setAlertOpen: (toggle: boolean): void => {
+    throw new Error('setAlertOpen() not implemented');
+  },
   isModalOpen: false,
-  setIsModalOpen: (toggle: boolean): void => {
-    throw new Error('setIsModalOpen() not implemented');
+  setModalOpen: (toggle: boolean): void => {
+    throw new Error('setModalOpen() not implemented');
   },
   modalTitle: MODAL_TITLES.ADD,
   setModalTitle: (title: string): void => {
@@ -22,10 +30,23 @@ export const ChecklistContext = createContext({
 
 export function ChecklistContextProvider({ children }: any) {
   const [user, setUser] = useState<User>({} as User);
+  const [itemId, setItemId] = useState<string>("");
   const [modalTitle, setModalTitle] = useState<string>(MODAL_TITLES.ADD);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isAlertOpen, setAlertOpen] = useState<boolean>(false);
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
   return (
-    <ChecklistContext.Provider value={{ user, setUser, modalTitle, setModalTitle, isModalOpen, setIsModalOpen }}>
+    <ChecklistContext.Provider value={{
+      user,
+      setUser,
+      itemId,
+      setItemId,
+      modalTitle,
+      setModalTitle,
+      isAlertOpen,
+      setAlertOpen,
+      isModalOpen,
+      setModalOpen
+    }}>
       {children}
     </ChecklistContext.Provider>
   );
