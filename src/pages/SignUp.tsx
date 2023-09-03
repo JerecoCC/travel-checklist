@@ -23,7 +23,7 @@ export const SignUp: FC = () => {
       if (data.session?.access_token) {
         navigate(ROUTES.CHECKLIST);
       } else {
-        navigate(ROUTES.LOGIN);
+        navigate(ROUTES.SIGNUP);
       }
     }
 
@@ -87,7 +87,11 @@ export const SignUp: FC = () => {
           email: email,
           password: password,
         });
-        if (error) throw error;
+        if (error) {
+          throw error;
+        } else {
+          navigate(ROUTES.CHECKLIST)
+        }
       } catch (error) {
         console.error(error);
       }
