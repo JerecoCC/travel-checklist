@@ -14,11 +14,11 @@ export const TODOS_QUERY = `
 id,
 title,
 description,
-isComplete,
+is_completed,
 todos (
   id,
   title,
   description,
-  isComplete
+  is_completed
 )
 `;

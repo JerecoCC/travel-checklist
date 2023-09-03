@@ -61,7 +61,9 @@ export const Home: FC = () => {
           .from('todos')
           .select(TODOS_QUERY)
           .is('parent_id', null)
-          .eq('user_id', context.user.id);
+          .eq('user_id', context.user.id)
+          .order('is_completed');
+          
         if (error) throw error;
         if (data) {
           setTodos(data);
@@ -74,8 +76,8 @@ export const Home: FC = () => {
   }
 
   const calculateCompleted = async (data: Todo[]) => {
-    const completed = data.reduce((total, item) => total + (item.isComplete ? 1 : 0), 0);
-    setCompletePercent(Math.round((completed / data.length) * 100));
+    const completed = data.reduce((total, item) => total + (item.is_completed ? 1 : 0), 0);
+    setCompletePercent(data.length > 0 ? Math.round((completed / data.length) * 100) : 0);
   }
 
   const signOut = async () => {

@@ -2,6 +2,6 @@ export default interface Todo {
   id: string;
   title?: string;
   description?: string;
-  isComplete?: boolean;
+  is_completed?: boolean;
   todos?: Todo[];
 };

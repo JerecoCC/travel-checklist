@@ -39,9 +39,16 @@ export const Checklist: FC<{ data: Todo[] }> = ({ data }) => {
         >
           Checklist
         </Text>
-        {data.map((item) => (
+        {data.length > 0 ? data.map((item) => (
           <ChecklistItem key={item.id} data={item} />
-        ))}
+        )) : (
+          <Text
+            className="px-8 py-4 border-b m-0"
+            fontStyle="italic"
+          >
+            No items added.
+          </Text>
+        )}
         <AddItem />
       </section>
 
