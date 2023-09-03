@@ -65,7 +65,8 @@ export const Home: FC = () => {
           .select(TODOS_QUERY)
           .is('parent_id', null)
           .eq('user_id', context.user.id)
-          .order('is_completed');
+          .order('is_completed')
+          .order('created_at');
           
         if (error) throw error;
         if (data) {
@@ -105,7 +106,7 @@ export const Home: FC = () => {
           <Button onClick={signOut} colorScheme="blackAlpha">Sign Out</Button>
         </div>
       </nav>
-      <div className="py-16 flex items-center flex-col gap-12">
+      <div className="py-16 flex items-center flex-col gap-8">
         <section className="w-2/4 px-16 py-8 bg-white rounded-xl">
           <Text fontSize="3xl" fontWeight="medium" className="mb-4">My Travel Checklist</Text>
           <Text fontSize="xl" fontWeight="medium">{completePercent}%</Text>

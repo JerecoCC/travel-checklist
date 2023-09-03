@@ -10,6 +10,7 @@ import Todo from '../lib/types/Todo';
 import { supabase } from '../lib/supabaseClient';
 import { Tooltip } from '@chakra-ui/react';
 import { ChecklistContext } from '../lib/context';
+import { MODAL_TITLES } from '../lib/constants';
 
 interface ChecklistItemProps {
   data: Todo;
@@ -65,7 +66,11 @@ export const ChecklistItem: FC<ChecklistItemProps> = ({ data }) => {
             <div className="invisible group-hover/item:visible">
               <Tooltip label="Edit Item" aria-label="Edit item tooltip">
                 <IconButton
-                  onClick={() => console.log("Edit Item")}
+                  onClick={() => {
+                    context.setModalTitle(MODAL_TITLES.EDIT);
+                    context.setModalOpen(true);
+                    context.setItemId(data.id);
+                  }}
                   variant='ghost'
                   colorScheme='teal'
                   aria-label="Edit item"

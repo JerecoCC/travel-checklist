@@ -1,13 +1,12 @@
 import { Text } from '@chakra-ui/layout';
-import React, { FC, useContext, useState } from 'react';
+import React, { FC, useContext } from 'react';
 import { ChecklistItem } from './ChecklistItem';
 import { AddItem } from './AddItem';
-import { Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Textarea } from '@chakra-ui/react';
 import { ChecklistContext } from '../lib/context';
-import { FormInput } from './FormInput';
 import { supabase } from '../lib/supabaseClient';
 import Todo from '../lib/types/Todo';
 import { DeleteAlert } from './DeleteAlert';
+import { AddEditModal } from './AddEditModal';
 
 interface ChecklistProps {
   data: Todo[]
@@ -15,24 +14,6 @@ interface ChecklistProps {
 
 export const Checklist: FC<ChecklistProps> = ({ data }) => {
   const context = useContext(ChecklistContext);
-  const [title, setTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-
-  const addItem = async () => {
-    try {
-      const { error } = await supabase
-        .from('todos')
-        .insert([{
-          title: title,
-          description: description,
-          user_id: context.user.id
-        }]);
-      if (error) throw error;
-    } catch (error) {
-      console.error(error);
-    }
-    context.setModalOpen(false);
-  }
 
   const deleteItem = async () => {
     if (context.itemId) {
@@ -75,40 +56,7 @@ export const Checklist: FC<ChecklistProps> = ({ data }) => {
         </div>
       </section>
       <DeleteAlert onConfirm={deleteItem} />
-      <Modal isOpen={context.isModalOpen} onClose={() => context.setModalOpen(false)}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{context.modalTitle}</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormInput
-              placeholder="Item Title"
-              onChange={(value: string) => setTitle(value)}
-              value={title}
-            />
-            <Textarea
-              placeholder='Item Description'
-              resize="vertical"
-              colorScheme="teal"
-              focusBorderColor="teal.400"
-              onChange={(e) => setDescription(e.target.value)}
-              value={description}
-            />
-          </ModalBody>
-
-          <ModalFooter>
-            <Button
-              colorScheme='teal'
-              variant='ghost'
-              mr={3}
-              onClick={() => context.setModalOpen(false)}
-            >
-              Close
-            </Button>
-            <Button colorScheme='teal' onClick={addItem}>Add</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <AddEditModal />
     </>
   )
 }
